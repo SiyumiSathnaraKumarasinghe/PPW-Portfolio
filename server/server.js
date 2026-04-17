@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import journalRoutes from './routes/journalRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import portfolioRoutes from './routes/portfolioRoutes.js';
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.use(express.json());
 // Main Routes
 app.use('/api/journals', journalRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/portfolio', portfolioRoutes);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ppw-portfolio')
