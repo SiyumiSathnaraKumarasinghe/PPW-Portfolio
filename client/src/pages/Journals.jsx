@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Journals = () => {
   const [journals, setJournals] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     axios.get('http://localhost:5000/api/journals')
@@ -18,11 +21,68 @@ const Journals = () => {
       });
   }, []);
 
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const scrollAmount = 380;
+      scrollRef.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+    }
+  };
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col gap-8 pb-12">
-      <div className="glass-panel text-center">
-        <h1 className="text-4xl gradient-text">Reflective Journal</h1>
-        <p className="text-xl text-muted mt-2">The PPW Roadmap</p>
+      <style>{`
+        .horizontal-scroll-container {
+          display: flex;
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+          gap: 2rem;
+          padding-bottom: 2rem;
+          /* Hide scrollbar for Chrome, Safari and Opera */
+          -ms-overflow-style: none;  /* IE and Edge */
+          scrollbar-width: none;  /* Firefox */
+        }
+        .horizontal-scroll-container::-webkit-scrollbar {
+          display: none;
+        }
+        .journal-card-wrapper {
+          min-width: 350px;
+          max-width: 400px;
+          flex-shrink: 0;
+          scroll-snap-align: start;
+          display: flex;
+          flex-direction: column;
+        }
+        .journal-node {
+          width: 50px; height: 50px;
+          border-radius: 50%;
+          background: var(--bg-dark);
+          border: 3px solid var(--primary);
+          display: flex; align-items: center; justify-content: center;
+          font-weight: bold; font-size: 1.1rem; color: white;
+          z-index: 10;
+          box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+          margin-bottom: -25px;
+          margin-left: 20px;
+        }
+      `}</style>
+
+      <div className="flex flex-col md:flex-row justify-between items-center mb-4">
+        <div className="glass-panel text-left w-full md:w-auto mb-4 md:mb-0">
+          <h1 className="text-4xl gradient-text">Reflective Journal</h1>
+          <p className="text-xl text-muted mt-2">The PPW Roadmap</p>
+        </div>
+        
+        {/* Navigation Arrows */}
+        {!loading && journals.length > 0 && (
+          <div className="flex gap-4">
+            <button onClick={() => scroll('left')} className="p-3 rounded-full glass hover:bg-white/10 transition-colors">
+              <ChevronLeft size={24} className="text-primary" />
+            </button>
+            <button onClick={() => scroll('right')} className="p-3 rounded-full glass hover:bg-white/10 transition-colors">
+              <ChevronRight size={24} className="text-primary" />
+            </button>
+          </div>
+        )}
       </div>
 
       {loading ? (
@@ -30,52 +90,35 @@ const Journals = () => {
       ) : journals.length === 0 ? (
         <div className="glass-panel text-center text-muted">No journal entries found.</div>
       ) : (
-        <div className="relative mt-12 mx-auto" style={{ maxWidth: '900px', width: '100%' }}>
-          {/* Winding Center Line */}
-          <div className="hidden md:block" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: '0', bottom: '0', width: '4px', background: 'linear-gradient(to bottom, var(--primary), var(--accent), var(--primary))', opacity: 0.3, zIndex: -1 }}></div>
-          
-          {journals.map((journal, index) => {
-            const isEven = index % 2 === 0;
-            return (
-              <motion.div 
-                key={journal._id} 
-                initial={{ opacity: 0, y: 50, x: isEven ? -50 : 50 }}
-                whileInView={{ opacity: 1, y: 0, x: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6, type: "spring", bounce: 0.3 }}
-                style={{ 
-                  display: 'flex', 
-                  flexDirection: 'column',
-                  position: 'relative',
-                  marginBottom: '4rem',
-                  alignItems: 'center'
-                }}
-              >
-                
-                {/* Visual Node */}
-                <motion.div 
-                  whileHover={{ scale: 1.2, boxShadow: '0 0 30px rgba(59,130,246,0.8)' }}
-                  className="md:absolute"
-                  style={{ 
-                    left: '50%', transform: 'translateX(-50%)', top: '20px', 
-                    width: '60px', height: '60px', borderRadius: '50%', 
-                    background: 'var(--bg-dark)', border: '4px solid var(--primary)', 
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                    fontWeight: 'bold', fontSize: '1.2rem', color: 'white', zIndex: 10,
-                    boxShadow: '0 0 20px rgba(59, 130, 246, 0.4)'
-                  }}
-                >
-                  W{journal.week}
-                </motion.div>
+        <div className="relative w-full overflow-hidden mt-8">
+          {/* Subtle horizontal connective line */}
+          <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-20 top-[24px] z-0"></div>
 
-                {/* Card Container depending on Even/Odd */}
-                <div className="w-full" style={{ display: 'flex', justifyContent: isEven ? 'flex-start' : 'flex-end', paddingRight: isEven ? '55%' : '0', paddingLeft: isEven ? '0' : '55%', marginTop: '40px' }}>
-                  <div className="glass-panel w-full" style={{ position: 'relative' }}>
-                    <div className="flex justify-between items-start mb-4">
-                      <h2 className="text-2xl text-primary">{journal.topic}</h2>
+          <div ref={scrollRef} className="horizontal-scroll-container relative z-10 pt-2 px-2">
+            {journals.map((journal, index) => {
+              return (
+                <motion.div 
+                  key={journal._id} 
+                  initial={{ opacity: 0, x: 50, scale: 0.9 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="journal-card-wrapper"
+                >
+                  {/* Visual Node */}
+                  <motion.div 
+                    whileHover={{ scale: 1.1, boxShadow: '0 0 25px rgba(59,130,246,0.8)' }}
+                    className="journal-node"
+                  >
+                    W{journal.week}
+                  </motion.div>
+
+                  {/* Card Container */}
+                  <div className="glass-panel w-full flex-grow pt-10" style={{ position: 'relative' }}>
+                    <div className="flex flex-col mb-4">
+                      <h2 className="text-xl text-primary font-semibold mb-2">{journal.topic}</h2>
+                      <span className="text-xs text-muted font-mono bg-blue-900/30 px-3 py-1 rounded inline-block w-fit">{journal.date}</span>
                     </div>
-                    <span className="text-xs text-muted mb-4 inline-block font-mono bg-blue-900/30 px-3 py-1 rounded">{journal.date}</span>
-                    <div style={{ whiteSpace: 'pre-wrap', fontSize: '0.95rem', lineHeight: '1.8' }}>
+                    <div className="pr-2" style={{ whiteSpace: 'pre-wrap', fontSize: '0.95rem', lineHeight: '1.7', maxHeight: '400px', overflowY: 'auto' }}>
                       {journal.content.split('What Was Challenging:').map((part, i) => {
                         if (i === 0) return <div key={i}>{part}</div>;
                         return (
@@ -87,10 +130,10 @@ const Journals = () => {
                       })}
                     </div>
                   </div>
-                </div>
-              </motion.div>
-            );
-          })}
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
       )}
     </motion.div>
