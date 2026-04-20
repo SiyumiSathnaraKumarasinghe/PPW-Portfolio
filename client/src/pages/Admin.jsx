@@ -139,18 +139,44 @@ const Admin = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="flex justify-center items-center h-full mt-20 animate-fade-in">
-        <form onSubmit={handleLogin} className="glass-panel w-full max-w-md text-center">
-          <ShieldAlert size={48} className="mx-auto text-primary mb-4" />
-          <h2 className="text-2xl gradient-text mb-6">CMS Admin Access</h2>
-          <div className="input-group">
-            <input type="password" placeholder="Enter password" className="input-field text-center" value={password} onChange={(e) => setPassword(e.target.value)} />
-          </div>
-          {loginError && <p className="text-danger text-sm mb-4">{loginError}</p>}
-          <button type="submit" className="btn btn-primary w-full justify-center">
-            <LogIn size={18} /> Login
-          </button>
-        </form>
+      <div className="flex justify-center items-center h-full mt-20 mb-20 animate-fade-in">
+        <div className="relative w-full max-w-md">
+          {/* Decorative glowing orb behind the panel */}
+          <div className="absolute -top-10 -left-10 w-32 h-32 bg-primary rounded-full blur-[80px] opacity-40"></div>
+          <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-accent rounded-full blur-[60px] opacity-40"></div>
+          
+          <form onSubmit={handleLogin} className="glass-panel text-center relative z-10" style={{ padding: '3.5rem 2.5rem', borderRadius: '24px', background: 'rgba(15, 23, 42, 0.7)' }}>
+            <div className="mb-6 flex justify-center">
+              <div className="p-4 rounded-full" style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                <ShieldAlert size={42} className="text-primary" />
+              </div>
+            </div>
+            <h2 className="text-3xl gradient-text mb-2 font-bold tracking-tight">Admin Portal</h2>
+            <p className="text-muted mb-8 text-sm">Secure access to Siyumi's portfolio CMS</p>
+            
+            <div className="input-group mb-6 text-left">
+              <label className="input-label text-sm ml-1">Master Password</label>
+              <input 
+                type="password" 
+                placeholder="••••••••••••" 
+                className="input-field" 
+                style={{ padding: '1rem 1.25rem', fontSize: '1rem', letterSpacing: '0.1em' }}
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+              />
+            </div>
+            
+            {loginError && (
+              <div className="p-3 mb-6 rounded-lg text-sm text-danger" style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                {loginError}
+              </div>
+            )}
+            
+            <button type="submit" className="btn btn-primary w-full justify-center" style={{ padding: '1rem', fontSize: '1.05rem', fontWeight: '600' }}>
+              <LogIn size={20} /> Access Dashboard
+            </button>
+          </form>
+        </div>
       </div>
     );
   }

@@ -31,7 +31,7 @@ const DesktopSidebar = ({ data }) => {
     >
       <div className="text-center">
         <div style={{ width: '150px', height: '150px', margin: '0 auto 1rem auto', borderRadius: '24px', overflow: 'hidden', border: '2px solid var(--border)' }}>
-          <img src="/avatar.png" alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img src="/profile.jpg" alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <h2 className="text-2xl font-bold">{data?.intro?.name || 'Loading...'}</h2>
         <p className="text-primary text-sm mt-1">{data?.intro?.title}</p>
