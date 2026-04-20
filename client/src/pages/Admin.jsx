@@ -183,15 +183,15 @@ const Admin = () => {
 
       {/* --- JOURNALS TAB --- */}
       {activeTab === 'journals' && (
-        <div>
-          <div className="flex justify-end mb-4">
+        <div className="animate-fade-in flex flex-col gap-6 mt-4">
+          <div className="flex justify-end">
             <button onClick={() => { setCurrentJournal({ week: '', topic: '', date: '', content: '' }); setIsEditingJournal(true); }} className="btn btn-primary">
               <Plus size={18} /> New Entry
             </button>
           </div>
 
           {isEditingJournal ? (
-            <form onSubmit={saveJournal} className="glass-panel mb-8 animate-fade-in">
+            <form onSubmit={saveJournal} className="glass-panel animate-fade-in">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl text-primary">{currentJournal._id ? 'Edit Entry' : 'Create Entry'}</h2>
                 <button type="button" onClick={() => setIsEditingJournal(false)} className="text-muted hover:text-danger"><X size={24} /></button>
