@@ -10,7 +10,8 @@ const Journals = () => {
   const scrollRef = useRef(null);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/journals')
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    axios.get(`${API_URL}/api/journals`)
       .then(res => {
         setJournals(res.data);
         setLoading(false);

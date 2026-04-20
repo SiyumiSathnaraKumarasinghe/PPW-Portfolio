@@ -92,7 +92,8 @@ const App = () => {
   const [portfolioData, setPortfolioData] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/portfolio')
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    axios.get(`${API_URL}/api/portfolio`)
       .then(res => setPortfolioData(res.data))
       .catch(err => console.error("Could not fetch master DB", err));
   }, []);

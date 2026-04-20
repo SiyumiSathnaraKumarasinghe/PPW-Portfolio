@@ -22,11 +22,13 @@ const Admin = () => {
     }
   }, [isAuthenticated]);
 
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
   const fetchData = async () => {
     try {
       const [jRes, pRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/journals'),
-        axios.get('http://localhost:5000/api/portfolio')
+        axios.get(`${API_URL}/api/journals`),
+        axios.get(`${API_URL}/api/portfolio`)
       ]);
       setJournals(jRes.data);
       setPortfolio(pRes.data);
@@ -39,7 +41,7 @@ const Admin = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', { password });
+      const res = await axios.post(`${API_URL}/api/auth/login`, { password });
       if (res.data.success) {
         setIsAuthenticated(true);
       }
@@ -52,9 +54,9 @@ const Admin = () => {
     e.preventDefault();
     try {
       if (currentJournal._id) {
-        await axios.put(`http://localhost:5000/api/journals/${currentJournal._id}`, currentJournal);
+        await axios.put(`${API_URL}/api/journals/${currentJournal._id}`, currentJournal);
       } else {
-        await axios.post('http://localhost:5000/api/journals', currentJournal);
+        await axios.post(`${API_URL}/api/journals`, currentJournal);
       }
       setIsEditingJournal(false);
       fetchData();
@@ -66,7 +68,7 @@ const Admin = () => {
   const deleteJournal = async (id) => {
     if (window.confirm('Are you sure you want to delete this journal entry?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/journals/${id}`);
+        await axios.delete(`${API_URL}/api/journals/${id}`);
         fetchData();
       } catch (err) {
         alert('Error deleting journal');
@@ -77,7 +79,7 @@ const Admin = () => {
   const savePortfolio = async (e) => {
     if (e) e.preventDefault();
     try {
-      await axios.put('http://localhost:5000/api/portfolio', portfolio);
+      await axios.put(`${API_URL}/api/portfolio`, portfolio);
       fetchData();
       alert('Portfolio settings saved successfully!');
     } catch (err) {
